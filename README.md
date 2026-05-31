@@ -90,8 +90,11 @@ cd backend
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 
-# 1) Chunk, embed (Pinecone Inference), and upsert
+# 1) Chunk, embed (Pinecone Inference), upsert, and refresh YoE profile (resume_profile.json)
 python scripts/ingest_documents.py
+
+# Optional: regenerate YoE only after editing resume.txt (no re-ingest)
+python scripts/run_resume_profile.py
 
 # 2) Acceptance test — should PASS with Heirmeios load-time bullet
 python scripts/test_retrieval.py "React performance optimization"
@@ -194,9 +197,9 @@ docker compose up --build
 
 | Phase | Focus |
 |-------|--------|
-| 0 | Monorepo scaffold, health endpoint, Docker Compose |
-| 1 | Single research agent + Tavily |
-| 2 | RAG / Pinecone resume matching + JDParserAgent |
+| 0 | Monorepo scaffold, health endpoint, Docker Compose ✓ |
+| 1 | Single research agent + Tavily ✓ |
+| 2 | RAG / Pinecone resume matching + JDParserAgent ✓ |
 | 3 | LangGraph multi-agent pipeline ✓ |
 | 4 | SSE streaming API ✓ |
 | 5 | React dashboard ✓ |

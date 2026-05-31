@@ -27,6 +27,27 @@ export interface ResearchSummary {
   red_flags: string[]
 }
 
+export type ExperienceMatchStatus = 'not_specified' | 'meets' | 'short'
+
+export interface SkillExperienceCheck {
+  skill: string
+  status: ExperienceMatchStatus
+  required_min_years?: number | null
+  candidate_years?: number | null
+  gap_years?: number | null
+  raw_text?: string
+  summary: string
+}
+
+export interface ExperienceMatch {
+  status: ExperienceMatchStatus
+  required_min_years?: number | null
+  candidate_years: number
+  gap_years?: number | null
+  summary: string
+  skill_checks?: SkillExperienceCheck[]
+}
+
 export interface OpportunityScore {
   score: number
   fit_summary: string
@@ -47,7 +68,7 @@ export interface PipelineResult {
   agent_logs?: string[]
 }
 
-export type ApplicationStage = 'applied' | 'interviewing' | 'hired'
+export type ApplicationStage = 'applied' | 'interviewing' | 'hired' | 'rejected'
 
 export interface JobHistoryEntry {
   job_id: string

@@ -16,7 +16,7 @@ export function BulletsTab({ bullets }: BulletsTabProps) {
         {bullets.map((bullet, index) => (
           <li
             key={`${index}-${bullet.slice(0, 24)}`}
-            className="rounded-lg border border-border bg-background/60 px-4 py-3 text-sm leading-relaxed text-foreground"
+            className="rounded-lg border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-foreground shadow-sm"
           >
             {bullet}
           </li>

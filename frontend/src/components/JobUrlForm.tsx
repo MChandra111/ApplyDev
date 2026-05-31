@@ -40,12 +40,12 @@ export function JobUrlForm({ isAnalyzing, onAnalyze }: JobUrlFormProps) {
           value={jobUrl}
           onChange={(event) => setJobUrl(event.target.value)}
           placeholder="https://jobs.lever.co/company/role-id"
-          className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           disabled={isAnalyzing}
         />
       </div>
 
-      <details className="rounded-lg border border-border bg-background/80 px-4 py-3 text-sm text-muted">
+      <details className="rounded-lg border border-border bg-surface px-4 py-3 text-sm text-muted shadow-sm">
         <summary className="cursor-pointer font-medium text-foreground">
           Dev options (skip scraping)
         </summary>
@@ -71,7 +71,7 @@ export function JobUrlForm({ isAnalyzing, onAnalyze }: JobUrlFormProps) {
                 value={companyName}
                 onChange={(event) => setCompanyName(event.target.value)}
                 disabled={isAnalyzing}
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground"
+                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-foreground"
               />
             </div>
           )}
@@ -81,7 +81,7 @@ export function JobUrlForm({ isAnalyzing, onAnalyze }: JobUrlFormProps) {
       <button
         type="submit"
         disabled={isAnalyzing}
-        className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-foreground transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-on-accent transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isAnalyzing ? (
           <>
@@ -118,6 +118,7 @@ function Spinner({ className }: { className?: string }) {
 
 const SAMPLE_JD = `
 Senior Frontend Engineer — Cloudflare
-Requirements: React, TypeScript, Core Web Vitals, FastAPI, AWS, Docker.
+Requirements: 3+ years React, 1+ years TypeScript, 2+ years professional frontend experience,
+Core Web Vitals, FastAPI, AWS, Docker.
 Nice to have: LangGraph, RAG.
 `.trim()

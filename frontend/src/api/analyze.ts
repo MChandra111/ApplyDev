@@ -49,6 +49,7 @@ export async function streamAnalyze(
   jobUrl: string,
   options: AnalyzeOptions = {},
   onEvent?: (event: PipelineEvent) => void,
+  onJobId?: (jobId: string) => void,
 ): Promise<StreamAnalyzeResult> {
   const body: Record<string, string> = { job_url: jobUrl }
   if (options.jdText) body.jd_text = options.jdText
@@ -66,7 +67,9 @@ export async function streamAnalyze(
     throw new Error(text || `Analyze failed (${response.status})`)
   }
 
-  const jobId = response.headers.get('x-job-id') ?? ''
+  let jobId = response.headers.get('x-job-id') ?? ''
+  if (jobId) onJobId?.(jobId)
+
   const events: PipelineEvent[] = []
 
   if (!response.body) {
@@ -74,6 +77,10 @@ export async function streamAnalyze(
   }
 
   for await (const event of parseSseStream(response.body)) {
+    if (!jobId && event.job_id) {
+      jobId = event.job_id
+      onJobId?.(jobId)
+    }
     events.push(event)
     onEvent?.(event)
   }

@@ -1,0 +1,58 @@
+{
+  "source_hash": "30a20da9bba02d36",
+  "generated_at": "2026-05-31T18:14:34.288531+00:00",
+  "total_years_professional": 1.25,
+  "skill_experience": [
+    {
+      "skill": "React",
+      "years": 2.25,
+      "evidence": "Optimized React dashboard performance at Heirmeios, built React pipeline UI for ApplyDev, and created Campus Events Dashboard"
+    },
+    {
+      "skill": "Python",
+      "years": 2.0,
+      "evidence": "Built REST integrations in Python/FastAPI at Heirmeios, scripted EC2 launch templates for TAMU Cyber Range Lab Automation, and supported students in systems analysis and SQL"
+    },
+    {
+      "skill": "FastAPI",
+      "years": 1.5,
+      "evidence": "Built REST integrations in Python/FastAPI at Heirmeios, designed a LangGraph state machine with FastAPI for ApplyDev, and paired with backend teammate to add paginated FastAPI endpoints"
+    },
+    {
+      "skill": "AWS",
+      "years": 1.75,
+      "evidence": "Scripted EC2 launch templates and security group baselines for TAMU Cyber Range Lab Automation, used AWS for ApplyDev, and is AWS Certified Cloud Practitioner"
+    },
+    {
+      "skill": "JavaScript",
+      "years": 1.5,
+      "evidence": "Built a React SPA with filterable calendar and org-level analytics cards for Campus Events Dashboard, and optimized React dashboard performance at Heirmeios"
+    },
+    {
+      "skill": "TypeScript",
+      "years": 1.25,
+      "evidence": "Built a React SPA with filterable calendar and org-level analytics cards for Campus Events Dashboard, and optimized React dashboard performance at Heirmeios"
+    },
+    {
+      "skill": "SQL",
+      "years": 1.0,
+      "evidence": "Supported students in systems analysis and SQL, and paired with backend teammate to add paginated FastAPI endpoints with PostgreSQL"
+    },
+    {
+      "skill": "REST APIs",
+      "years": 1.5,
+      "evidence": "Built REST integrations in Python/FastAPI at Heirmeios, consumed a lightweight Node REST API for Campus Events Dashboard, and designed a LangGraph state machine with FastAPI for ApplyDev"
+    },
+    {
+      "skill": "Docker",
+      "years": 0.75,
+      "evidence": "Used Docker for ApplyDev and Heirmeios Inventory Dashboard"
+    },
+    {
+      "skill": "LangGraph",
+      "years": 0.75,
+      "evidence": "Designed a LangGraph state machine with parallel nodes for ApplyDev"
+    }
+  ],
+  "notes": "Internship experience is counted as 0.25-0.5 years, and teaching assistant experience is counted as 0.5 years. The total years of professional experience is estimated based on the provided documents."
+}

@@ -19,8 +19,8 @@ export function AppHeader({
   trackedCount,
 }: AppHeaderProps) {
   return (
-    <header className="border-b border-accent bg-background backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:px-10">
+    <header className="bg-background backdrop-blur">
+      <div className="border-b-2 border-accent mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:px-10">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">ApplyDev</h1>
@@ -31,7 +31,7 @@ export function AppHeader({
           <BackendStatus ok={backendOk} />
         </div>
 
-        <nav className="flex gap-1 rounded-lg border border-border bg-surface p-1">
+        <nav className="flex gap-1 rounded-lg border border-border bg-surface p-1 shadow-sm">
           <TabButton
             active={activeTab === 'analyze'}
             onClick={() => onTabChange('analyze')}
@@ -72,7 +72,7 @@ function TabButton({
       onClick={onClick}
       className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition ${
         active
-          ? 'bg-accent text-foreground shadow-sm'
+          ? 'bg-accent text-on-accent shadow-sm'
           : 'text-muted hover:bg-surface-raised hover:text-foreground'
       }`}
     >
@@ -80,7 +80,7 @@ function TabButton({
       {badge && (
         <span
           className={`rounded-full px-2 py-0.5 text-xs ${
-            active ? 'bg-accent-hover/50 text-foreground' : 'bg-surface-raised text-muted'
+            active ? 'bg-accent-hover/50 text-on-accent' : 'bg-surface-raised text-muted'
           }`}
         >
           {badge}

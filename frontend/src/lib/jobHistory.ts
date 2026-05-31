@@ -31,6 +31,13 @@ export function saveJobHistoryEntry(entry: JobHistoryEntry): JobHistoryEntry[] {
   return trimmed
 }
 
+/** Remove one job from localStorage history. */
+export function deleteJobHistoryEntry(jobId: string): JobHistoryEntry[] {
+  const next = loadJobHistory().filter((entry) => entry.job_id !== jobId)
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+  return next
+}
+
 /** Update application stage tag for one saved job. */
 export function updateJobApplicationStage(
   jobId: string,
@@ -50,13 +57,14 @@ export function createHistoryEntry(
   status: 'completed' | 'failed',
   result?: PipelineResult,
   error?: string,
+  applicationStage?: ApplicationStage,
 ): JobHistoryEntry {
   const entry: JobHistoryEntry = {
     job_id: jobId,
     job_url: jobUrl,
     company_name: result?.company_name ?? result?.research_summary?.company_name,
     job_title: getJobTitleFromResult(result),
-    application_stage: status === 'completed' ? 'applied' : undefined,
+    application_stage: applicationStage,
     status,
     created_at: new Date().toISOString(),
     result,

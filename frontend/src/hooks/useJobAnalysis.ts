@@ -31,6 +31,10 @@ export function useJobAnalysis() {
   const applyEvent = useCallback((event: PipelineEvent) => {
     const { node, status } = event
 
+    if (event.job_id) {
+      setJobId((prev) => prev ?? event.job_id)
+    }
+
     if (isTrackedStep(node)) {
       setStepStatus((prev) => ({
         ...prev,
@@ -92,8 +96,9 @@ export function useJobAnalysis() {
           jobUrl,
           { ...options, signal: controller.signal },
           applyEvent,
+          (id) => setJobId(id),
         )
-        setJobId(id)
+        if (id) setJobId(id)
       } catch (err) {
         if (controller.signal.aborted) return
         const message = err instanceof Error ? err.message : 'Analysis failed'

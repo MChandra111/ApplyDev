@@ -9,12 +9,15 @@ from pydantic import BaseModel, Field, ValidationError
 from app.agents.research_agent import GROQ_MODEL
 from app.config import get_required_env
 from app.models.jd_parse import (
+    JDExperienceRequirement,
     JDParseResult,
     JDSkillMatch,
     JDSkillRequirement,
     RetrievedChunkModel,
 )
+from app.rag.resume_profile import ensure_resume_profile
 from app.rag.retrieval import retrieve_experience
+from app.services.experience_match import build_full_experience_match
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +27,18 @@ Return ONLY valid JSON (no markdown) with this shape:
 {
   "job_title": "string",
   "company_context": "one sentence about role level or team if known",
+  "experience_requirement": null or {
+    "min_years": number,
+    "max_years": number or null,
+    "raw_text": "exact JD phrase, e.g. '3+ years of React experience'"
+  },
   "skills": [
     {
       "skill": "short label",
       "priority": "required | preferred | nice_to_have",
-      "evidence_query": "phrase to search a resume, e.g. 'React performance optimization'"
+      "evidence_query": "phrase to search a resume, e.g. 'React performance optimization'",
+      "min_years": null or number,
+      "experience_raw_text": "JD phrase for this skill's tenure, or empty string"
     }
   ]
 }
@@ -36,7 +46,10 @@ Return ONLY valid JSON (no markdown) with this shape:
 Rules:
 - List 6-12 skills max, focusing on technical requirements.
 - evidence_query should be specific enough to find relevant resume bullets.
-- Do not invent skills that are not implied by the job description text."""
+- Do not invent skills that are not implied by the job description text.
+- experience_requirement: role-level YoE only (e.g. "5+ years software engineering"). null if not stated.
+- Per skill: set min_years ONLY when the JD ties years to that skill (e.g. "3+ years React" → min_years 3).
+  Different skills may have different min_years. Leave min_years null when no tenure is stated for that skill."""
 
 JD_PARSER_USER_PROMPT = """Parse this job description and extract skills:
 
@@ -50,6 +63,7 @@ class _JDSkillsPayload(BaseModel):
 
     job_title: str = "Unknown role"
     company_context: str = ""
+    experience_requirement: JDExperienceRequirement | None = None
     skills: list[JDSkillRequirement] = Field(default_factory=list)
 
 
@@ -104,11 +118,26 @@ class JDParserAgent:
                 matches[0].score if matches else 0.0,
             )
 
+        profile = ensure_resume_profile(force=False)
+        experience_match = build_full_experience_match(
+            payload.experience_requirement,
+            payload.skills,
+            profile,
+        )
+        logger.info(
+            "YoE check: status=%s total=%.1f yrs, %s skill-level checks",
+            experience_match.status,
+            profile.total_years_professional,
+            len(experience_match.skill_checks),
+        )
+
         result = JDParseResult(
             job_title=payload.job_title,
             company_context=payload.company_context,
             skills=payload.skills,
             skill_matches=skill_matches,
+            experience_requirement=payload.experience_requirement,
+            experience_match=experience_match,
         )
         logger.debug("JDParserAgent OUTPUT skills=%s", len(result.skills))
         return result

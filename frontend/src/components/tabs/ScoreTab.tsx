@@ -1,10 +1,15 @@
-import type { OpportunityScore } from '../../types/api'
+import type {
+  ExperienceMatch,
+  OpportunityScore,
+  SkillExperienceCheck,
+} from '../../types/api'
 
 interface ScoreTabProps {
   score?: OpportunityScore
+  experienceMatch?: ExperienceMatch
 }
 
-export function ScoreTab({ score }: ScoreTabProps) {
+export function ScoreTab({ score, experienceMatch }: ScoreTabProps) {
   if (!score) {
     return <p className="text-sm text-muted">No opportunity score available.</p>
   }
@@ -25,6 +30,10 @@ export function ScoreTab({ score }: ScoreTabProps) {
           </span>
         </div>
       </div>
+
+      {experienceMatch && experienceMatch.status !== 'not_specified' && (
+        <ExperienceMatchSection match={experienceMatch} />
+      )}
 
       <div className="grid gap-4 md:grid-cols-3">
         <ReasonCard title="Fit" body={score.fit_summary} />
@@ -73,6 +82,62 @@ function ScoreRing({ value }: { value: number }) {
   )
 }
 
+function ExperienceMatchSection({ match }: { match: ExperienceMatch }) {
+  const meets = match.status === 'meets'
+  const border = meets ? 'border-accent/40 bg-accent-subtle' : 'border-error/40 bg-error-subtle'
+  const label = meets ? 'Meets experience requirements' : 'Below experience requirements'
+  const checks = match.skill_checks ?? []
+
+  return (
+    <article className={`rounded-lg border p-4 ${border}`}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h4 className="text-xs font-semibold uppercase tracking-wide text-muted">
+          Years of experience
+        </h4>
+        <span
+          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${
+            meets ? 'bg-accent-subtle text-accent' : 'bg-error-subtle text-error'
+          }`}
+        >
+          {label}
+        </span>
+      </div>
+      <p className="mt-2 text-sm leading-relaxed text-foreground/90">{match.summary}</p>
+      <p className="mt-2 text-xs text-muted">
+        Overall profile: ~{match.candidate_years} yrs professional
+      </p>
+
+      {checks.length > 0 && (
+        <ul className="mt-4 space-y-2 border-t border-border/60 pt-3">
+          {checks.map((check) => (
+            <SkillExperienceRow key={`${check.skill}-${check.raw_text}`} check={check} />
+          ))}
+        </ul>
+      )}
+    </article>
+  )
+}
+
+function SkillExperienceRow({ check }: { check: SkillExperienceCheck }) {
+  const meets = check.status === 'meets'
+
+  return (
+    <li className="flex flex-wrap items-center justify-between gap-2 text-sm">
+      <div className="min-w-0">
+        <p className="font-medium text-foreground">{check.skill}</p>
+        <p className="text-xs text-muted">{check.summary}</p>
+      </div>
+      <span
+        className={`shrink-0 rounded px-2 py-0.5 text-xs font-medium uppercase ${
+          meets ? 'bg-accent-subtle text-accent' : 'bg-error-subtle text-error'
+        }`}
+      >
+        {meets ? 'Meets' : 'Short'}
+      </span>
+    </li>
+  )
+}
+
 function ReasonCard({
   title,
   body,
@@ -87,7 +152,7 @@ function ReasonCard({
       className={`rounded-lg border p-4 ${
         accent === 'error'
           ? 'border-error/30 bg-error-subtle'
-          : 'border-border bg-background/40'
+          : 'border-border bg-surface shadow-sm'
       }`}
     >
       <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">

@@ -4,6 +4,14 @@ export const APPLICATION_STAGES: ApplicationStage[] = [
   'applied',
   'interviewing',
   'hired',
+  'rejected',
+]
+
+/** Stages shown as kanban columns on the Application Tracker (excludes rejected). */
+export const TRACKER_BOARD_STAGES: ApplicationStage[] = [
+  'applied',
+  'interviewing',
+  'hired',
 ]
 
 export const STAGE_META: Record<
@@ -26,7 +34,13 @@ export const STAGE_META: Record<
     label: 'Hired',
     description: 'Offer accepted',
     columnClass: 'border-accent/50 bg-accent/25',
-    tagClass: 'bg-accent text-foreground ring-accent',
+    tagClass: 'bg-accent text-on-accent ring-accent',
+  },
+  rejected: {
+    label: 'Rejected',
+    description: 'No longer pursuing or employer declined',
+    columnClass: 'border-error/30 bg-error-subtle',
+    tagClass: 'bg-error-subtle text-error ring-error/40',
   },
 }
 
@@ -38,6 +52,7 @@ export function groupJobsByApplicationStage(
     applied: [],
     interviewing: [],
     hired: [],
+    rejected: [],
   }
 
   for (const entry of history) {

@@ -33,7 +33,7 @@ export function PipelineSteps({ stepStatus }: PipelineStepsProps) {
                     ? 'border-accent/40 bg-accent/10'
                     : status === 'error'
                       ? 'border-error/50 bg-error-subtle'
-                      : 'border-border bg-background/40'
+                      : 'border-border bg-surface shadow-sm'
               }`}
             >
               <StepIcon status={status} />

@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import type { ApplicationStage, JobHistoryEntry } from '../types/api'
 import {
   createHistoryEntry,
+  deleteJobHistoryEntry,
   loadJobHistory,
   saveJobHistoryEntry,
   updateJobApplicationStage,
@@ -22,7 +23,11 @@ export function useJobHistory() {
     [],
   )
 
-  return { history, addEntry, setApplicationStage }
+  const deleteJob = useCallback((jobId: string) => {
+    setHistory(deleteJobHistoryEntry(jobId))
+  }, [])
+
+  return { history, addEntry, setApplicationStage, deleteJob }
 }
 
 export { createHistoryEntry }

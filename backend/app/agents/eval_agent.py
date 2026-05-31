@@ -18,8 +18,13 @@ EVAL_AGENT_SYSTEM_PROMPT = """You evaluate job opportunities for a recent grad t
 
 Score overall fit from 1 (poor) to 10 (excellent) using:
 - Skill overlap with provided resume matches
+- Years-of-experience match when provided (short YoE is a major red flag)
 - Company stability and growth signals from research
 - Red flags (layoffs, mismatched seniority, vague JD)
+
+If experience_match.status is "short", cap the score at 5 unless skills are exceptional,
+and mention YoE gaps (including per-skill checks in skill_checks) in red_flags_summary.
+If status is "not_specified", ignore YoE.
 
 Return ONLY valid JSON:
 {
@@ -37,6 +42,9 @@ Research:
 
 Skill matches (resume evidence):
 {matches_json}
+
+Years-of-experience check (deterministic):
+{experience_match_json}
 
 Resume bullets drafted:
 {bullets_json}
@@ -73,6 +81,11 @@ class EvalAgent:
                     company_name=company_name,
                     research_json=research.model_dump_json(indent=2),
                     matches_json=jd_parse.model_dump_json(indent=2),
+                    experience_match_json=(
+                        jd_parse.experience_match.model_dump_json(indent=2)
+                        if jd_parse.experience_match
+                        else "null"
+                    ),
                     bullets_json=json.dumps(bullets, indent=2),
                     cover_excerpt=cover_letter[:400],
                 ),

@@ -1,5 +1,6 @@
 import type { PipelineResult, StepStatus } from '../types/api'
 import { JobUrlForm } from './JobUrlForm'
+import { JobActionButtons } from './JobActionButtons'
 import { PipelineSteps } from './PipelineSteps'
 import { ResultsPanel } from './ResultsPanel'
 import type { TrackedStepId } from '../lib/pipelineSteps'
@@ -10,6 +11,11 @@ interface DashboardViewProps {
   error: string | null
   isAnalyzing: boolean
   onAnalyze: (jobUrl: string, options?: { jdText?: string; companyName?: string }) => void
+  canSaveJob: boolean
+  isSaved: boolean
+  isTracked: boolean
+  onSaveJob: () => void
+  onMarkApplied: () => void
 }
 
 /** Main analyzer: URL input, live pipeline steps, and results. */
@@ -19,6 +25,11 @@ export function DashboardView({
   error,
   isAnalyzing,
   onAnalyze,
+  canSaveJob,
+  isSaved,
+  isTracked,
+  onSaveJob,
+  onMarkApplied,
 }: DashboardViewProps) {
   const showPipeline =
     isAnalyzing || Object.values(stepStatus).some((status) => status !== 'pending')
@@ -26,7 +37,7 @@ export function DashboardView({
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <section className="space-y-6">
-        <div className="rounded-xl border border-border bg-surface p-6">
+        <div className="rounded-xl border border-border bg-surface p-6 shadow-sm">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
             New analysis
           </h2>
@@ -40,7 +51,7 @@ export function DashboardView({
         )}
 
         {showPipeline && (
-          <div className="rounded-xl border border-border bg-surface p-6">
+          <div className="rounded-xl border border-border bg-surface p-6 shadow-sm">
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
               Agent pipeline
             </h2>
@@ -49,7 +60,15 @@ export function DashboardView({
         )}
       </section>
 
-      <section>
+      <section className="space-y-4">
+        {canSaveJob && (
+          <JobActionButtons
+            isSaved={isSaved}
+            isTracked={isTracked}
+            onSaveJob={onSaveJob}
+            onMarkApplied={onMarkApplied}
+          />
+        )}
         {result ? (
           <ResultsPanel result={result} />
         ) : (

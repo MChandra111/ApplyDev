@@ -10,6 +10,7 @@ if str(_BACKEND_ROOT) not in sys.path:
 from app.config import configure_logging, get_documents_dir, load_project_env
 from app.rag.chunking import chunk_text
 from app.rag.pinecone_store import ensure_index_exists, upsert_chunks
+from app.rag.resume_profile import ensure_resume_profile
 
 
 def load_text_files(documents_dir: Path) -> list[tuple[str, str]]:
@@ -38,7 +39,13 @@ def main() -> None:
         all_chunks.extend(chunks)
 
     total = upsert_chunks(all_chunks)
-    print(f"\nDone — upserted {total} vectors.\n")
+    print(f"\nUpserted {total} vectors.")
+
+    profile = ensure_resume_profile(force=True)
+    print(
+        f"Resume YoE profile refreshed: {profile.total_years_professional:g} yrs total, "
+        f"{len(profile.skill_experience)} skills tracked.\n",
+    )
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { checkBackendHealth } from './api/analyze'
 import { AppHeader, type AppTab } from './components/AppHeader'
 import { ApplicationTrackerView } from './components/ApplicationTrackerView'
@@ -20,29 +20,32 @@ function App() {
     activeJobUrl,
     analyze,
   } = useJobAnalysis()
-  const { history, addEntry, setApplicationStage } = useJobHistory()
-  const savedJobRef = useRef<string | null>(null)
+  const { history, addEntry, setApplicationStage, deleteJob } = useJobHistory()
   const trackedCount = countTrackedJobs(history)
+
+  const savedEntryForCurrentJob = useMemo(
+    () => (jobId ? history.find((entry) => entry.job_id === jobId) : undefined),
+    [history, jobId],
+  )
+
+  const isSavedForLater = Boolean(savedEntryForCurrentJob)
+  const isInTracker = Boolean(savedEntryForCurrentJob?.application_stage)
+
+  const saveCurrentJob = useCallback(() => {
+    if (!jobId || !activeJobUrl || !result) return
+    addEntry(createHistoryEntry(jobId, activeJobUrl, 'completed', result))
+    setActiveTab('saved')
+  }, [jobId, activeJobUrl, result, addEntry])
+
+  const markCurrentJobAsApplied = useCallback(() => {
+    if (!jobId || !activeJobUrl || !result) return
+    addEntry(createHistoryEntry(jobId, activeJobUrl, 'completed', result, undefined, 'applied'))
+    setActiveTab('tracker')
+  }, [jobId, activeJobUrl, result, addEntry])
 
   useEffect(() => {
     void checkBackendHealth().then(setBackendOk)
   }, [])
-
-  useEffect(() => {
-    if (!jobId || !activeJobUrl || savedJobRef.current === jobId) return
-    if (isAnalyzing) return
-
-    if (result) {
-      addEntry(createHistoryEntry(jobId, activeJobUrl, 'completed', result))
-      savedJobRef.current = jobId
-      return
-    }
-
-    if (error) {
-      addEntry(createHistoryEntry(jobId, activeJobUrl, 'failed', undefined, error))
-      savedJobRef.current = jobId
-    }
-  }, [jobId, activeJobUrl, result, error, isAnalyzing, addEntry])
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -62,10 +65,19 @@ function App() {
             error={error}
             isAnalyzing={isAnalyzing}
             onAnalyze={analyze}
+            canSaveJob={Boolean(result && jobId && activeJobUrl)}
+            isSaved={isSavedForLater}
+            isTracked={isInTracker}
+            onSaveJob={saveCurrentJob}
+            onMarkApplied={markCurrentJobAsApplied}
           />
         )}
         {activeTab === 'saved' && (
-          <SavedJobsView history={history} onStageChange={setApplicationStage} />
+          <SavedJobsView
+            history={history}
+            onStageChange={setApplicationStage}
+            onDeleteJob={deleteJob}
+          />
         )}
         {activeTab === 'tracker' && (
           <ApplicationTrackerView
