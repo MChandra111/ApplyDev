@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "description": "Five realistic job postings with hand-written ideal resume bullets for Maheshwar Chandra's profile. Used by the Phase 6 eval harness (LLM-as-judge).",
+  "pass_threshold": 3.5,
+  "cases": [
+    {
+      "id": "frontend_react_cloudflare",
+      "name": "Senior Frontend Engineer",
+      "company_name": "Cloudflare",
+      "job_url": "https://example.com/jobs/cloudflare-frontend",
+      "notes": "Should tie to Heirmeios React performance work (38% load-time reduction, memoization, code splitting).",
+      "jd_text": "Senior Frontend Engineer — Cloudflare\n\nWe're looking for a frontend engineer to build performant React dashboards used by thousands of customers. You'll optimize bundle size and load times, collaborate with API teams on FastAPI services, and deploy via Docker on AWS.\n\nRequirements:\n- 3+ years React and TypeScript\n- Experience improving Core Web Vitals and load performance\n- REST API integration experience\n- Familiarity with vector search or RAG is a plus\n- AWS and Docker in production\n\nNice to have: LangGraph, agentic AI systems, technical writing.",
+      "ideal_bullets": [
+        "Optimized React dashboard performance at Heirmeios via memoization, lazy-loaded routes, and React DevTools profiling, cutting initial load time 38% (4.2s to 2.6s).",
+        "Built REST integrations in Python/FastAPI for inventory sync with PostgreSQL-backed services during a remote software engineering internship.",
+        "Designed a LangGraph multi-agent pipeline with RAG retrieval (Pinecone) and SSE streaming to a React dashboard for tailored job application materials.",
+        "Deployed containerized services with Docker and documented AWS Lambda/S3 deployment patterns while pursuing AWS Cloud Practitioner certification."
+      ]
+    },
+    {
+      "id": "backend_python_stripe",
+      "name": "Backend Engineer, Python",
+      "company_name": "Stripe",
+      "job_url": "https://example.com/jobs/stripe-backend-python",
+      "notes": "Should emphasize FastAPI, PostgreSQL, REST API design — Heirmeios + TA API grading experience.",
+      "jd_text": "Backend Engineer, Python — Stripe\n\nBuild reliable payment-adjacent APIs and internal tools. You will design REST endpoints, write integration tests, and partner with frontend teams on contract design.\n\nRequirements:\n- Strong Python (FastAPI or Flask) and SQL (PostgreSQL)\n- Experience designing REST APIs and debugging with Postman or similar\n- Familiarity with Docker and CI/CD\n- Clear technical communication and code review habits\n\nNice to have: async Python, observability, fintech or high-availability systems.",
+      "ideal_bullets": [
+        "Built FastAPI REST endpoints for inventory sync with PostgreSQL at Heirmeios, pairing with frontend on paginated API contracts instead of client-side full dataset loads.",
+        "Supported 120+ students as a MIS teaching assistant, grading API design assignments and leading Postman-based debugging in office hours.",
+        "Containerized backend and frontend services with Docker Compose for local multi-service development in the ApplyDev agentic pipeline project.",
+        "Authored idempotent Python automation scripts for AWS EC2 lab provisioning, reducing cohort setup time from ~3 hours to 45 minutes."
+      ]
+    },
+    {
+      "id": "ai_engineer_databricks",
+      "name": "AI Engineer",
+      "company_name": "Databricks",
+      "job_url": "https://example.com/jobs/databricks-ai-engineer",
+      "notes": "Should highlight LangGraph, RAG, Pinecone, prompt engineering, eval harness — ApplyDev project.",
+      "jd_text": "AI Engineer — Databricks\n\nHelp customers ship production LLM features: retrieval pipelines, agent orchestration, and quality evaluation.\n\nRequirements:\n- Python and API development (FastAPI preferred)\n- Hands-on RAG: chunking, embeddings, vector search (Pinecone, FAISS, or similar)\n- Experience with agent frameworks (LangGraph, LangChain, or equivalent)\n- Prompt engineering and structured JSON outputs from LLMs\n- Basic eval methodology for generative outputs\n\nNice to have: streaming UX (SSE/WebSockets), LangSmith tracing, Docker.",
+      "ideal_bullets": [
+        "Architected a LangGraph state machine with parallel scrape/research/parse nodes, RAG retrieval over Pinecone, and structured JSON outputs from Groq LLM calls.",
+        "Built document ingestion with configurable chunking and Pinecone Inference embeddings to match job skills against resume and project evidence.",
+        "Exposed agent progress via Server-Sent Events from FastAPI to a React pipeline UI for real-time multi-step job analysis.",
+        "Implemented an LLM-as-judge eval harness scoring generated resume bullets on relevance, specificity, and keyword match against golden examples."
+      ]
+    },
+    {
+      "id": "fullstack_swe_notion",
+      "name": "Software Engineer, Full Stack",
+      "company_name": "Notion",
+      "job_url": "https://example.com/jobs/notion-fullstack",
+      "notes": "Should blend React/TypeScript dashboard work with backend APIs — Heirmeios + campus dashboard project.",
+      "jd_text": "Software Engineer, Full Stack — Notion\n\nShip user-facing features across React/TypeScript clients and Python/Node services. You'll own small vertical slices from UI polish to API integration.\n\nRequirements:\n- React and TypeScript in production\n- REST API consumption and error handling on the client\n- Python or Node backend experience\n- Attention to accessibility and responsive layout\n- Git, code review, and iterative delivery\n\nNice to have: performance profiling, design systems, collaborative editing domains.",
+      "ideal_bullets": [
+        "Delivered a React 18 + TypeScript admin dashboard at Heirmeios with React.memo, code-split charts, and accessibility fixes (ARIA, keyboard navigation) for core admin flows.",
+        "Built a filterable React events dashboard consuming a REST API, with mobile-friendly layout piloted by a campus student organization.",
+        "Integrated FastAPI backend services with PostgreSQL for inventory data and collaborated with product on paginated API design.",
+        "Profiled frontend bottlenecks with Lighthouse and React Profiler, targeting SKU table re-renders to cut load time by 38%."
+      ]
+    },
+    {
+      "id": "cloud_engineer_aws_partner",
+      "name": "Cloud Engineer",
+      "company_name": "Onica",
+      "job_url": "https://example.com/jobs/onica-cloud-engineer",
+      "notes": "Should reference AWS CP cert, EC2 automation, Docker, planned Lambda/S3 deploy for ApplyDev.",
+      "jd_text": "Cloud Engineer — Onica (AWS Partner)\n\nSupport customers migrating and operating workloads on AWS. Automate repeatable infra tasks and document runbooks for operations teams.\n\nRequirements:\n- AWS fundamentals (EC2, S3, IAM, networking basics)\n- Scripting in Python or bash for automation\n- Docker and container basics\n- Strong documentation and troubleshooting\n\nNice to have: AWS certification, CI/CD (GitHub Actions), serverless (Lambda + API Gateway).",
+      "ideal_bullets": [
+        "Automated AWS EC2 launch templates and security group baselines for 30 isolated cyber range lab instances, with idempotent Python scripts and rollback documentation.",
+        "Earned AWS Certified Cloud Practitioner and applied Lambda, S3, and API Gateway patterns in the ApplyDev deployment roadmap.",
+        "Packaged FastAPI and React services in Docker with docker-compose for reproducible local and container-image-based deploys.",
+        "Reduced lab provisioning time from ~3 hours to 45 minutes per cohort through scripted infrastructure and snapshot procedures for teaching assistants."
+      ]
+    }
+  ]
+}
