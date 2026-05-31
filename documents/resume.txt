@@ -1,0 +1,32 @@
+MAHESHWAR CHANDRA
+Dallas, TX | mchandra.dev | github.com/mchandra | linkedin.com/in/mchandra
+
+EDUCATION
+Texas A&M University — B.S. Technology Management (minor: Cybersecurity & Business), May 2025
+
+SUMMARY
+Full-stack developer with experience in React, Python, FastAPI, REST APIs, LLM prompt engineering,
+RAG pipelines, and AWS (Cloud Practitioner certified). Building agentic AI systems for production-style workflows.
+
+EXPERIENCE
+
+Software Engineering Intern | Heirmeios | Remote | Summer 2024
+- Optimized React dashboard performance by memoizing expensive list renders, lazy-loading route chunks,
+  and profiling with React DevTools; reduced initial load time by 38% (4.2s to 2.6s) on production builds.
+- Built REST integrations in Python/FastAPI for inventory sync with PostgreSQL-backed services.
+- Collaborated with product on accessibility fixes (ARIA labels, keyboard nav) for core admin flows.
+
+Teaching Assistant | Texas A&M MIS Department | College Station, TX | 2023–2024
+- Supported 120+ students in systems analysis, SQL, and agile project documentation.
+- Graded API design assignments and led office hours on debugging Postman collections.
+
+PROJECTS (see also documents/project_*.txt)
+
+SKILLS
+Languages: Python, TypeScript, JavaScript, SQL
+Frameworks: React, FastAPI, Node.js
+Cloud & DevOps: AWS (Lambda, S3, API Gateway), Docker, GitHub Actions
+AI: LangGraph, LangChain, RAG, vector search (Pinecone), prompt engineering, Groq/Claude APIs
+
+CERTIFICATIONS
+AWS Certified Cloud Practitioner

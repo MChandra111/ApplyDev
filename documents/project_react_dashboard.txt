@@ -1,0 +1,16 @@
+PROJECT: Campus Events Dashboard (Personal, 2023)
+
+Stack: React, TypeScript, REST API, Chart.js
+
+Problem
+Student orgs needed a single view of upcoming events pulled from fragmented spreadsheets.
+
+What I did
+- Built a React SPA with filterable calendar and org-level analytics cards.
+- Consumed a lightweight Node REST API; normalized date fields client-side.
+- Deployed static build to Netlify with environment-based API base URLs.
+
+Outcome
+Piloted with one student organization; positive feedback on mobile layout and filter speed.
+
+Keywords: React, TypeScript, REST, dashboards, Netlify

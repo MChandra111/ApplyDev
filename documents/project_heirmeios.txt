@@ -1,0 +1,19 @@
+PROJECT: Heirmeios Inventory Dashboard (Internship, 2024)
+
+Stack: React 18, TypeScript, Vite, FastAPI, PostgreSQL, Docker
+
+Problem
+Operations team relied on a slow admin dashboard when filtering 10k+ SKU records. Page loads exceeded 4 seconds
+and re-renders blocked the main thread during peak hours.
+
+What I did
+- React performance optimization: React.memo on table rows, useMemo for derived filters, code-splitting with
+  React.lazy + Suspense for heavy chart modules.
+- Measured with Lighthouse and React Profiler; targeted the SKU table and chart bundle as primary bottlenecks.
+- Reduced initial load time by 38% (4.2s → 2.6s) after webpack bundle analysis and removing unused MUI imports.
+- Paired with backend teammate to add paginated FastAPI endpoints instead of client-side full dataset loads.
+
+Outcome
+Dashboard felt responsive for daily ops users; team adopted the profiling checklist for future features.
+
+Keywords: React, performance, load time, memoization, code splitting, FastAPI, PostgreSQL

@@ -1,0 +1,17 @@
+PROJECT: ApplyDev — Multi-Agent Job Application Research System (Portfolio, 2025–2026)
+
+Stack: LangGraph, Groq, Claude, FastAPI, React, Pinecone, Tavily, Docker, AWS (planned)
+
+Problem
+Applying to dozens of roles means repeating company research, resume tailoring, and cover letter drafts.
+
+What I did
+- Designed a LangGraph state machine with parallel nodes: scrape JD, research company (Tavily), parse requirements,
+  retrieve resume evidence (RAG), write bullets/cover letter, score opportunity fit.
+- Built RAG ingestion over resume + project docs with chunking and Pinecone vector search.
+- Exposed streaming progress via Server-Sent Events to a React pipeline UI.
+
+Outcome
+End-to-end demo from job URL to tailored materials with eval harness for bullet quality (LLM-as-judge).
+
+Keywords: LangGraph, RAG, Pinecone, FastAPI, React, SSE, agents, evals

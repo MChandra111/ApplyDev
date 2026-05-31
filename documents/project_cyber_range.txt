@@ -1,0 +1,16 @@
+PROJECT: TAMU Cyber Range Lab Automation (Capstone-adjacent, 2024)
+
+Stack: Python, Ansible-style scripts, AWS EC2, bash, documentation
+
+Problem
+Cybersecurity lab VMs were provisioned manually, causing inconsistent student environments before exams.
+
+What I did
+- Scripted EC2 launch templates and security group baselines for 30 isolated lab instances.
+- Documented rollback and snapshot procedures for teaching assistants.
+- Added logging and idempotent checks so re-runs did not duplicate resources.
+
+Outcome
+Cut lab prep time from ~3 hours to 45 minutes per cohort; fewer ticket escalations during labs.
+
+Keywords: AWS EC2, automation, cybersecurity, Python, infrastructure
