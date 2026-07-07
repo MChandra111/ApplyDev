@@ -1,208 +1,82 @@
 # ApplyDev
 
-Multi-agent job application research system — researches companies, matches your resume, and generates tailored application materials.
+A multi-agent pipeline that researches a company, matches your real resume experience against a job posting, and drafts tailored resume bullets, a cover letter, and a fit score — for engineers tired of writing the same application from scratch every time.
 
-**Status:** Phase 5 (React dashboard with SSE streaming UI)
+## Why
 
-## Project structure
+Most "resume tailoring" tools either rewrite your resume with invented metrics or make you manually re-explain your experience for every posting. ApplyDev instead treats your resume and project write-ups as a **retrieval corpus**: every bullet it writes has to be grounded in a chunk it actually pulled back from your documents, with an explicit rule against inventing numbers. Company research, requirement parsing, and writing are split into separate small agents rather than one mega-prompt, so each step is inspectable and independently testable.
 
-```
-ApplyDev/
-├── backend/          # FastAPI API (agents, streaming, health)
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── agents/   # LLM agents (research, JD parse, writer, eval)
-│   │   ├── graph/    # LangGraph state + nodes + pipeline
-│   │   ├── tools/    # Callable tools (Tavily search, JD scrape, …)
-│   │   ├── rag/      # Chunking, embeddings, Pinecone, retrieval
-│   │   └── models/   # Pydantic output schemas
-│   ├── scripts/      # CLI test runners
-├── documents/        # Resume + project .txt files for RAG
-│   ├── requirements.txt
-│   └── Dockerfile
-├── frontend/         # React + Vite + TypeScript + Tailwind
-│   ├── src/
-│   └── Dockerfile
-├── docker-compose.yml
-├── .env.example      # Copy to .env and fill in keys
-└── README.md
-```
+![ApplyDev dashboard screenshot or demo gif](docs/demo.gif)
 
-## Prerequisites
+## How it works
 
-- Python 3.12+
-- Node.js 20+
-- Docker Desktop (optional, for Compose)
+1. **Scrape or accept a job description** — pastes a URL and the scraper (`httpx` + BeautifulSoup) strips it to plain text, or you paste JD text directly to skip scraping entirely for sites that block bots.
+2. **Research and parse run in parallel** — a `ResearchAgent` runs an observe → act loop against Tavily search to find company size, recent news, tech stack mentions, and red flags; a `JDParserAgent` extracts required skills and years-of-experience requirements and matches each one against your resume via Pinecone RAG.
+3. **Bullets and cover letter are written from evidence, not vibes** — the `WriterAgent` only sees the retrieved resume chunks and parsed JD, is instructed to "never invent metrics," and returns bullets capped at 28 words each.
+4. **An `EvalAgent` scores the opportunity 1–10** with reasoning, based on the research and requirement fit, before you decide whether it's worth applying.
+5. **Every node streams live over SSE** — the dashboard shows each of the six pipeline steps flip from pending → running → done in a CI/CD-style step list as the backend actually executes them.
+6. **Runs are saved and tracked** — completed analyses persist to the browser, get tagged Applied / Interviewing / Hired / Rejected, and show up on a kanban-style Application Tracker board.
 
-## Local setup (without Docker)
+A separate LLM-as-judge eval harness (`evals/`) scores generated bullets against hand-written "ideal" bullets on relevance, specificity, and keyword match, so prompt changes can be checked for regressions before they ship (see `EVALS.md`).
 
-### 1. Environment variables
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS 4 |
+| Backend | FastAPI, Python 3.12, Server-Sent Events |
+| Orchestration | LangGraph (parallel fan-out/fan-in state graph) |
+| AI / LLM | Groq (`llama-3.3-70b-versatile`) for all 5 agents (Research, JD Parser, Resume Profile, Writer, Eval) |
+| Retrieval | Pinecone (vector store) + Pinecone Inference (`llama-text-embed-v2` embeddings) |
+| Tools | Tavily (web search), BeautifulSoup4 + httpx (JD scraping) |
+| Observability | LangSmith tracing (optional) |
+| Storage | In-memory job store (backend), browser `localStorage` (job history/tracker) |
+| Hosting | Docker Compose (backend + frontend containers) |
+| Testing | pytest (unit), custom LLM-as-judge eval harness |
+
+## Architecture notes
+
+LangGraph's `astream()` only emits an update *after* a node finishes — there's no built-in "node started" event — but the dashboard needs to show a spinner the moment a step begins, not just a checkmark when it ends. `pipeline_stream.py` solves this by synthesizing `running` events itself: when `scrape_jd` completes, it immediately emits `running` for both parallel branches (`research_company`, `parse_jd`); when *both* of those report done, it emits `running` for `write_bullets`, and so on down the chain. This keeps the UI's step-by-step feel without needing a second event stream from LangGraph, at the cost of the stream module having to hardcode the graph's shape (`PARALLEL_NODES`, `SEQUENTIAL_AFTER_PARALLEL`) rather than deriving it from the graph definition — a reasonable tradeoff for a six-node pipeline that would need revisiting if the graph got significantly more dynamic.
+
+## Getting started
+
+**Prerequisites:** Python 3.12+, Node.js 20+, and (optionally) Docker Desktop.
 
 ```bash
+# 1. Environment variables
 cp .env.example .env
-# Edit .env with your API keys (not required for /health in Phase 0)
-```
+# Fill in GROQ_API_KEY, TAVILY_API_KEY, PINECONE_API_KEY at minimum
 
-### 2. Backend
-
-```bash
+# 2. Backend
 cd backend
 python -m venv .venv
-
-# Windows PowerShell
-.\.venv\Scripts\Activate.ps1
-
+.\.venv\Scripts\Activate.ps1   # Windows; use `source .venv/bin/activate` on macOS/Linux
 pip install -r requirements.txt
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
 
-Health check: http://localhost:8000/health
-
-### 3. Frontend
-
-In a second terminal:
-
-```bash
+# 3. Frontend (second terminal)
 cd frontend
 npm install
 npm run dev
 ```
 
-Open http://localhost:5173 — the dashboard should show **Backend connected** when the API is running.
+Open `http://localhost:5173` — the header shows **Backend connected** once the API is reachable, then paste a job URL (or enable "Send sample JD text" in Dev options to skip scraping) and click **Analyze job**.
 
-## Phase 1 — Run the ResearchAgent
-
-From `backend/` with your `.env` at the repo root (needs `GROQ_API_KEY` and `TAVILY_API_KEY`):
+Before your first real analysis, replace the placeholder files in `documents/` with your own `resume.txt` and `project_*.txt`, then run:
 
 ```bash
-.\.venv\Scripts\Activate.ps1
-python scripts/run_research_agent.py "Anthropic"
-```
-
-You should see `Tool call: tavily_web_search` lines in the console, then a JSON summary with `company_size`, `recent_news`, `tech_stack_mentions`, and `red_flags`.
-
-## Phase 2 — RAG pipeline
-
-**Prerequisite:** Add `PINECONE_API_KEY` to `.env` ([free starter tier](https://www.pinecone.io/)). Replace `documents/*.txt` with your real resume and projects.
-
-```powershell
 cd backend
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-
-# 1) Chunk, embed (Pinecone Inference), upsert, and refresh YoE profile (resume_profile.json)
 python scripts/ingest_documents.py
-
-# Optional: regenerate YoE only after editing resume.txt (no re-ingest)
-python scripts/run_resume_profile.py
-
-# 2) Acceptance test — should PASS with Heirmeios load-time bullet
-python scripts/test_retrieval.py "React performance optimization"
-
-# 3) Parse a JD and match each skill to resume chunks
-python scripts/run_jd_parser.py
 ```
 
-**Embeddings note:** Anthropic does not ship a public embeddings API like OpenAI’s. This project uses **Pinecone Inference** (`llama-text-embed-v2`) so you only need `PINECONE_API_KEY` — a common production pattern.
+This chunks and embeds your documents into Pinecone and regenerates the cached years-of-experience profile used for skill matching.
 
-## Phase 3 — LangGraph pipeline
+**Or with Docker Compose** (from the repo root, after step 1 above): `docker compose up --build`.
 
-Runs six nodes in order with **parallel** research + JD parsing after scrape:
+## Roadmap / known limitations
 
-`scrape_jd` → (`research_company` ∥ `parse_jd`) → `write_bullets` → `write_cover_letter` → `evaluate_opportunity`
-
-**Prerequisites:** `GROQ_API_KEY`, `TAVILY_API_KEY`, `PINECONE_API_KEY`, documents ingested (Phase 2). Optional: `LANGSMITH_API_KEY` for traces at [smith.langchain.com](https://smith.langchain.com).
-
-```powershell
-cd backend
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-
-# First run — built-in sample JD (skips scraping)
-python scripts/run_pipeline.py --company Cloudflare
-
-# Or paste a saved posting into a .txt file
-python scripts/run_pipeline.py --jd-file path\to\posting.txt --company Cloudflare
-
-# Real URL (may fail if the site blocks bots)
-python scripts/run_pipeline.py "https://jobs.lever.co/example/role-id"
-```
-
-You should see six `agent_logs` lines ending with `evaluate_opportunity: score=N/10`, plus resume bullets and cover letter in the JSON output.
-
-## Phase 4 — Streaming API
-
-Restart the backend after pulling changes so routes are loaded:
-
-```powershell
-cd backend
-.\.venv\Scripts\Activate.ps1
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-| Endpoint | Purpose |
-|----------|---------|
-| `POST /api/analyze` | Run pipeline; response is **SSE** (`text/event-stream`) |
-| `GET /api/jobs/{job_id}` | Fetch completed/failed result (header `X-Job-Id` on analyze) |
-
-**Request body** (`POST /api/analyze`):
-
-```json
-{
-  "job_url": "https://example.com/jobs/123",
-  "jd_text": "optional — skips scrape for testing",
-  "company_name": "optional — override inferred company"
-}
-```
-
-**SSE event shape:**
-
-```json
-{ "job_id": "...", "node": "parse_jd", "status": "running|done|error", "output": {}, "error": null }
-```
-
-Smoke test (server must be running):
-
-```powershell
-python scripts/test_analyze_api.py --jd-text --company Cloudflare
-```
-
-Then open `GET http://localhost:8000/api/jobs/{job_id}` using the id printed as `X-Job-Id`.
-
-## Phase 5 — React dashboard
-
-With backend and frontend running (`npm run dev` in `frontend/`), open http://localhost:5173.
-
-1. Paste a job URL (or use **Dev options** → sample JD to skip scraping).
-2. Click **Analyze job** — the left column shows each agent step go from waiting → spinner → checkmark.
-3. When complete, the right column shows tabs: Research Summary, Resume Bullets, Cover Letter, Opportunity Score.
-4. Completed runs auto-save to **Saved Jobs**, grouped by company and job title.
-5. Tag any saved job as **Applied**, **Interviewing**, or **Hired** — tagged jobs appear on the **Application Tracker** kanban board.
-
-**Tip:** Keep “Send sample JD text” enabled for local demos unless you have a scraper-friendly job URL.
-
-## Local setup (Docker Compose)
-
-From the repo root:
-
-```bash
-cp .env.example .env
-docker compose up --build
-```
-
-- Backend: http://localhost:8000/health
-- Frontend: http://localhost:5173
-
-## Phase roadmap
-
-| Phase | Focus |
-|-------|--------|
-| 0 | Monorepo scaffold, health endpoint, Docker Compose ✓ |
-| 1 | Single research agent + Tavily ✓ |
-| 2 | RAG / Pinecone resume matching + JDParserAgent ✓ |
-| 3 | LangGraph multi-agent pipeline ✓ |
-| 4 | SSE streaming API ✓ |
-| 5 | React dashboard ✓ |
-| 6 | Eval harness |
-| 7 | AWS deploy |
-| 8 | Portfolio polish |
+- Job results live in an in-memory Python dict — they're lost on backend restart; no database yet.
+- Job history and the Application Tracker are `localStorage`-only: no accounts, no sync across devices/browsers.
+- JD scraping has no headless-browser fallback, so postings behind bot protection (LinkedIn, some ATS platforms) need to be pasted as text manually.
+- The eval harness's LLM-as-judge and the agents it's grading both run on the same Groq model family — cross-model judging would catch more bias (noted as a caveat in `EVALS.md`).
+- Per the project's own phase roadmap: eval CI integration, cloud deployment, and general polish are still open (Phases 7–8).
