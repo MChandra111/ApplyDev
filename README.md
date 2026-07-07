@@ -1,5 +1,6 @@
 # ApplyDev
 
+<<<<<<< HEAD
 A multi-agent pipeline that researches a company, matches your real resume experience against a job posting, and drafts tailored resume bullets, a cover letter, and a fit score — for engineers tired of writing the same application from scratch every time.
 
 ## Why
