@@ -85,4 +85,4 @@ This chunks and embeds your documents into Pinecone and regenerates the cached y
 
 ---
 
-<p align="center">Built by <a href="#">your name</a></p>
+<p align="center">Built by <a href="https://mchandra.dev/">Maheshwar Chandra</a></p>
